@@ -1,0 +1,54 @@
+;;;
+{
+    "pgotInclude" : [
+        "global.got",
+        "Makefile.src/mk-rm.got",
+        "Makefile.src/mk-goUtil.got",
+        "Makefile.src/mk-docMan15.got",
+        "Makefile.src/mk-testcli.got",
+        "Makefile.src/mk-docMain.got",
+        "Makefile.src/mk-mkFile.got",
+        "Makefile.src/mk-lint.got",
+        "Makefile.src/mk-todo.got"
+    ]
+}
+;;;
+.POSIX:
+
+PNAME = pgot
+
+RTEMPLATE ?= ../repo-template
+
+all: goUtil doc
+
+doc: docMain docMan
+
+clean: cleanGoUtil cleanCheck
+
+cleanDoc: cleanDocMain cleanDocMan
+
+install: installGoUtil installMan
+
+uninstall: uninstallGoUtil uninstallMan
+
+.DEFAULT_GOAL := all
+
+.PHONY: all doc clean cleanDoc install uninstall
+
+{{template "mk-rm" .}}
+
+{{template "mk-goUtil" .}}
+
+{{template "mk-docMan15" .}}
+
+{{template "mk-testcli" .}}
+
+{{template "mk-docMain" .}}
+
+{{template "mk-mkFile" .}}
+
+{{template "mk-lint" .}}
+
+{{template "mk-todo" .}}
+
+# vim:set noet tw=80:

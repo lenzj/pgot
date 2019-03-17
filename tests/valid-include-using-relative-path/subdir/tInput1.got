@@ -1,0 +1,9 @@
+;;;
+{"author2" : "Jason Todd Lenz",
+"pgotInclude" : [ "subdir2/tInput3.got", "tInput2.got" ] }
+;;;
+tInput1.got -> Created by **{{.author2}}** on _{{.date}}_
+
+{{template "tInput2" . -}}
+
+{{template "tInput3" . -}}

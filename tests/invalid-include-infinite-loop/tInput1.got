@@ -1,0 +1,5 @@
+;;;
+{"author2" : "Jason Todd Lenz",
+ "pgotInclude" : [ "tStdin" ]}
+;;;
+Created by **{{.author2}}** on _{{.date}}_

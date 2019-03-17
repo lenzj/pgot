@@ -1,0 +1,9 @@
+;;;
+{"date" : "2019-08-04",
+"author" : "Jason T Lenz",
+"pgotInclude" : [ "subdir/tInput1.got" ] }
+;;;
+# Topic
+tInput.got -> Created by **{{.author}}** on _{{.date}}_
+
+{{template "tInput1" . -}}

@@ -1,0 +1,6 @@
+;;;
+{"author":"Jack Black",
+"date":"2019-10-05"}
+;;;
+# Topic
+Created by **{{.author}}** on _{{.date}}_

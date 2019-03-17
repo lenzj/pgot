@@ -1,0 +1,1 @@
+{{.cli}} -i subdir1:subdir2 tInput.got

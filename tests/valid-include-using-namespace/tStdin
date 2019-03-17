@@ -1,0 +1,10 @@
+;;;
+{"date" : "2019-07-13",
+"author" : "Jason T Lenz",
+"pgotInclude" : [ { "f":"tInput1.got", "n":"test" } ] }
+;;;
+# Topic
+Created by **{{.test.author}}** on _{{.date}}_
+
+# Imported
+{{template "tInput1" . -}}

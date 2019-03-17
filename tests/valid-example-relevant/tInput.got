@@ -1,0 +1,4 @@
+;;;
+{ "name" : "Jason" }
+;;;
+Hello world, my name is {{.name}}

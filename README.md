@@ -1,0 +1,286 @@
+# pgot
+
+**pgot** (process golang template) is a lightweight command line [template
+processing](https://en.wikipedia.org/wiki/Template_processor) utility.  It
+directly leverages the [golang template
+package](https://golang.org/pkg/text/template) from the standard library.  pgot
+processes files that contain a combination of frontmatter followed by a
+template.  The frontmatter consists of
+[JSON](https://en.wikipedia.org/wiki/JSON) formatted data, and the template that
+follows is free form text containing
+[actions](https://golang.org/pkg/text/template/#hdr-Actions).  By convention,
+files to be processed by pgot are referred to as "got" (golang template) files
+and have a ".got" filename extension although this is not a requirement.
+
+The pgot utility implements a "pgotInclude" keyword that can be defined in
+frontmatter to include (aka import) other got files.  Each of these included
+files can also include other got files if desired.  The number of nested
+includes is limited only by memory and the number of open files allowed by the
+operating system.
+
+Both the frontmatter and the template from an included got file can be leveraged
+by the originating got file.  The imported template is accessed via a [template
+action](https://golang.org/pkg/text/template/#hdr-Actions) using the name of the
+file minus its extension.  By default, imported frontmatter is merged into the
+global namespace (aka "."), however pgotInclude also has the option of importing
+into a separate namespace if desired to avoid data naming collisions.  Although
+pgot is small in size these features along with the comprehensive actions
+available in the standard template library enable a large range of applications
+from simple to large scale complex text file hierarchies.
+
+The range of uses is quite large, but a few examples include:
+
+* A simple README, LICENSE, or CONTRIBUTING template with standard sections that
+  an author can leverage across various git repositories (the pgot source code
+  [repository](https://git.lenzplace.org/lenzj/pgot) is an example).
+
+* A static website using imported pgot templates to standardize website
+  appearance, headers, footers, etc.  (<https://blog.lenzplace.org> is an example).
+
+* A mail merge script to generate tailored messages for each recipient.
+
+* A large book written in markdown or latex with metadata in frontmatter for
+  authors, chapters, references, contributors, keywords, etc.
+
+## Command line synopsis
+
+```text
+Usage: pgot [OPTION]... [FILE]...
+Read a got (golang template) file and send transformed text to output.
+Options:
+  -d string
+        string of json frontmatter to include
+  -i paths
+        colon separated list of paths to search with pgotInclude
+  -o file
+        output file path (default "-")
+```
+
+If no files are specified on the command line, then pgot reads from sdtin.
+Similarly if the -o option is not used, the output is sent to stdout (aka "-").
+If multiple files are specified on the command line the last file listed is the
+primary or root file with previous files being included in a way similar to
+how the "pgotInclude" keyword works in frontmatter.
+
+The -d option can be used to insert frontmatter from the command line.  This
+frontmatter is merged into the global (aka ".") namespace and takes precedence
+or overwrites any frontmatter read in from the main got file or included files.
+
+The path(s) specified with the -i option can include absolute or relative paths.
+An empty path in the -i option (the default) indicates that the local path
+relative to the respective got file should be searched.  A few examples below
+shed further light on this:
+
+```text
+pgot -i "" myfile.got
+    This is the same as the default for the -i option.  For any relative files
+    specified using pgotInclude, the base dir of the calling got file will be
+    where the relative path starts.
+
+pgot -i ":/home/veronica/pgot-inc" myfile.got
+    The folder of the calling got file will be searched first (nothing before
+    the first ":") and if the file is not found there it will then search the
+    "/home/veronica/pgot-inc" folder.
+
+pgot -i "/home/larry/inc1::/home/larry/inc2" myfile.got
+    The inc1 folder will be searched first, followed by the folder the calling
+    got file is in, followed by the inc2 folder.
+```
+
+## "Got" file format
+
+A got file must include a frontmatter JSON section bounded by three semicolons
+each on their own line before and after the JSON data.  Anything after this
+frontmatter section is considered to be the "template" which is processed by the
+golang template package. The full documentation of the template actions provided
+by the golang library is available [here](https://golang.org/pkg/text/template).
+Note that it is acceptable to have an empty frontmatter section or template
+section or both.
+
+### Got file examples
+
+The following examples also exist in the "tests" sub folder within this
+repository.  A minimal (although admittedly useless) got file consists of the
+following:
+
+```text
+;;;
+;;;
+```
+
+A slightly more relevant got file:
+
+```text
+;;;
+{ "name" : "Jason" }
+;;;
+Hello world, my name is {{.name}}
+```
+
+And a more advanced example leveraged from
+[here](https://golang.org/pkg/text/template/#example_Template):
+
+```text
+;;;
+{
+  "guests" : [
+    ["Aunt Mildred", "bone china tea set", true],
+    ["Uncle John", "moleskin pants", false],
+    ["Cousin Rodney", "", false]
+  ]
+}
+;;;
+{{range .guests -}}
+Dear {{index . 0}},
+{{if index . 2}}
+It was a pleasure to see you at the wedding.
+{{- else}}
+It is a shame you couldn't make it to the wedding.
+{{- end}}
+{{with index . 1 -}}
+Thank you for the lovely {{.}}.
+{{end}}
+Best wishes,
+Josie
+---
+{{end -}}
+```
+
+### Frontmatter key word
+
+Any valid JSON structure can be used in the frontmatter section.  There is 
+however one keyword that is reserved when used in frontmatter.
+
+**pgotInclude**
+
+```text
+"pgotInclude" : [ "file1.got", "file2.got", "file3.got" ]
+"pgotInclude" : [ { "f":"file1.got", "n":"name1" },
+                  { "f":"file2.got", "n":"name2" }, 
+                  { "f":"file3.got", "n":"name3" } ]
+```
+
+The pgotInclude keyword is used to include (aka import) other pgot files and can
+be used in one of two variations as shown above.  Note that three files are
+showdn in the above variations, however any number of files can be included
+(from one to the limits of memory and the filesystem).
+
+The first variation above imports each got file in the order defined in the
+array.  The frontmatter is merged directly into the top level "." namespace.  If
+two imported got files contain the same data element name, the last file
+included takes precedence.  In other words, file3 would take precedence over
+file2, and file1.  Lastly, any frontmatter defined in the originating got file
+(the file called directly by pgot) is included last and takes precedence
+(overwrites) any included data structures that have the same element name.
+
+The second variation can be used to import frontmatter into the specified
+namespace which can be useful to avoid data collisions or overwriting.  For
+example if file1 defines an element "color" : "Purple", and file2 defines
+"color" : "Green", they can both be accessed separately via
+{{.name1.color}}, and {{.name2.color}}.
+
+It's important to note that the included got filenames may be specified with
+relative or absolute paths.  For relative paths the the included got file is
+relative to the location of the originating got file.
+
+Note that future keywords may be created which start with "pgot", so it is
+advisable to avoid naming any elements in frontmatter starting with "pgot".
+
+## Custom pgot actions
+
+In addition to the standard [template
+actions](https://golang.org/pkg/text/template/#hdr-Actions), there is currently
+one custom template action defined by pgot (below).  This is included more as a
+simple example rather than a critical feature.  For those interested in
+implementing custom template actions the
+[gotFuncs.go](/lenzj/pgot/src/branch/master/lib/gotFuncs.go) source
+code demonstrates how custom template actions can be added.
+
+```text
+{{lnp "label" "url"}}
+```
+
+lnp (link new page) generates the specified url as an html link which opens a
+new page when the user selects the link.  If label is nil (aka "") then the url
+is displayed as the clickable link, otherwise the label itself is displayed.
+
+## Compiling from source
+
+### Dependencies
+
+* Go compiler (v1.12 or later).
+* Go package [chunkio](https://git.lenzplace.org/lenzj/chunkio)
+* Go package [testcli](https://git.lenzplace.org/lenzj/testcli) to run tests.
+* [Scdoc](https://git.sr.ht/~sircmpwn/scdoc/) utility to generate the man page.
+  Only needed if changes to man page sources are made.
+* [pgot](https://git.lenzplace.org/lenzj/pgot) (this utility) to process files in the templates sub
+  folder.  Only needed if changes to README.md, LICENCE, Makefile etc. are
+  needed.
+
+### Installing
+
+```text
+$ make
+# make install
+```
+
+## Running the tests
+
+```text
+$ make check
+```
+
+## Contributing
+
+If you have a bugfix, update, issue or feature enhancement the best way to reach
+me is by following the instructions in the link below.  Thank you!
+
+<https://blog.lenzplace.org/about/contact.html>
+
+
+## Versioning
+
+I follow the [SemVer](http://semver.org/) strategy for versioning. The latest
+version is listed in the [releases](/lenzj/pgot/releases) section. 
+
+
+## License
+
+This project is licensed under a BSD two clause license - see the
+[LICENSE](LICENSE) file for details.
+
+
+## FAQ
+
+**Q**: What causes the following error message: "pgot : invalid character '}'
+looking for beginning of object key string"?
+
+**A**: This is an error message from the golang JSON library.  The frontmatter
+is likely not valid structured [JSON](https://json.org/).  Make sure you don't
+have something like the following.  The last comma in the "copyright" row should
+be deleted.
+
+```text
+;;;
+{
+  "author" : "Jose",
+  "date" : "March 6th, 2019",
+  "copyright" : "2019",
+}
+;;;
+```
+
+**Q**: I keep getting '\<no value\>' in parts of my output?
+
+**A**: This is what the golang template engine outputs when a
+[pipeline](https://golang.org/pkg/text/template/#hdr-Actions) is undefined.  It
+can sometimes be handy when debugging golang templates to include
+{{.}} somewhere in the template.  This displays __all__ the elements
+in the global pipeline defined at time of template execution.
+
+## Other similar projects
+
+* <https://github.com/hairyhenderson/gomplate>
+* <https://github.com/gliderlabs/sigil>
+
+<!-- vim:set ts=4 sw=4 et tw=80: -->
