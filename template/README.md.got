@@ -194,13 +194,13 @@ advisable to avoid naming any elements in frontmatter starting with "pgot".
 
 ## Custom pgot actions
 
-In addition to the standard [template
-actions](https://golang.org/pkg/text/template/#hdr-Actions), there is currently
-one custom template action defined by pgot (below).  This is included more as a
-simple example rather than a critical feature.  For those interested in
-implementing custom template actions the
-[gotFuncs.go]({{.repLoc}}{{.rname}}/src/branch/master/lib/gotFuncs.go) source
-code demonstrates how custom template actions can be added.
+In addition to the standard
+[template actions](https://golang.org/pkg/text/template/#hdr-Actions), there are
+currently two custom template actions defined by pgot (below).  These are
+included more as simple examples rather than critical features.  For those
+interested in implementing custom template actions the
+[gotFuncs.go](/lenzj/pgot/src/branch/master/lib/gotFuncs.go) source code
+demonstrates how custom template actions can be added.
 
 ```text
 {{`{{lnp "label" "url"}}`}}
@@ -209,6 +209,15 @@ code demonstrates how custom template actions can be added.
 lnp (link new page) generates the specified url as an html link which opens a
 new page when the user selects the link.  If label is nil (aka "") then the url
 is displayed as the clickable link, otherwise the label itself is displayed.
+
+```text
+{{`{{toInt value}}`}}
+```
+
+toInt (to integer) is able to convert a value parameter to an integer.  Multiple
+types can be handled.  For example a string representation of a number can be
+converted.  This can also convert the JSON default number type (float64) to an
+integer.
 
 ## Compiling from source
 

@@ -14,8 +14,8 @@ import (
 var Version string
 
 func main() {
-        // Get application name as executed from command prompt
-        appName := filepath.Base(os.Args[0])
+	// Get application name as executed from command prompt
+	appName := filepath.Base(os.Args[0])
 
 	// Set up formatting for error messages
 	log.SetFlags(0)
@@ -25,22 +25,22 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(),
 			"Usage: %s [OPTION]... [FILE]...\n"+
-			"Process a got (golang template) file and send transformed text to output.\n"+
-			"Options:\n", appName)
+				"Process a got (golang template) file and send transformed text to output.\n"+
+				"Options:\n", appName)
 		flag.PrintDefaults()
 	}
 	var oflag = flag.String("o", "-", "output `file` path")
 	var iflag = flag.String("i", "", "colon separated list of `paths` to search with pgotInclude")
 	var dflag = flag.String("d", "", "string of json frontmatter to include")
-	var vflag = flag.Bool("v", false, "display " + appName + " version")
+	var vflag = flag.Bool("v", false, "display "+appName+" version")
 
 	flag.Parse()
 
-        // Display application version if requested
-        if *vflag {
-                fmt.Println(appName + " " + Version)
-                os.Exit(0)
-        }
+	// Display application version if requested
+	if *vflag {
+		fmt.Println(appName + " " + Version)
+		os.Exit(0)
+	}
 
 	// Prepare input and output streams
 	var (
