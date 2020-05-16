@@ -244,20 +244,17 @@ $ make check
 If you have a bugfix, update, issue or feature enhancement the best way to reach
 me is by following the instructions in the link below.  Thank you!
 
-<https://blog.lenzplace.org/about/contact.html>
-
+<https://blog.lenzplace.org/contact>
 
 ## Versioning
 
 I follow the [SemVer](http://semver.org/) strategy for versioning. The latest
 version is listed in the [releases](/lenzj/pgot/releases) section. 
 
-
 ## License
 
 This project is licensed under a BSD two clause license - see the
 [LICENSE](LICENSE) file for details.
-
 
 ## FAQ
 
@@ -291,5 +288,3 @@ in the global pipeline defined at time of template execution.
 
 * <https://github.com/hairyhenderson/gomplate>
 * <https://github.com/gliderlabs/sigil>
-
-<!-- vim:set ts=4 sw=4 et tw=80: -->

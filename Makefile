@@ -112,32 +112,21 @@ cleanCheck:
 
 #---Generate Main Documents---
 
-DOCMAIN := README.md LICENSE
+regenDocMain:
+	pgot -i ":$(RTEMPLATE)" -o README.md template/README.md.got
+	pgot -i ":$(RTEMPLATE)" -o LICENSE $(RTEMPLATE)/LICENSE.src/BSD-2-clause.got
 
-README.md: template/README.md.got
-	pgot -i ":$(RTEMPLATE)" -o $@ $<
-
-LICENSE: $(RTEMPLATE)/LICENSE.src/BSD-2-clause.got
-	pgot -i ":$(RTEMPLATE)" -o $@ $<
-
-docMain: $(DOCMAIN)
-
-cleanDocMain:
-	$(RM) $(DOCMAIN)
-
-.PHONY: docMain, cleanDocMain
+.PHONY: regenDocMain
 
 #---Generate Makefile---
 
 Makefile: template/Makefile.got
 	pgot -i ":$(RTEMPLATE)" -o $@ $<
 
-mkFile: Makefile
-
-regenMkFile:
+regenMakefile:
 	pgot -i ":$(RTEMPLATE)" -o Makefile template/Makefile.got
 
-.PHONY: mkFile regenMkFile
+.PHONY: regenMakefile
 
 #---Lint Helper Target---
 
