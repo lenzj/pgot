@@ -21,7 +21,7 @@ RTEMPLATE ?= ../repo-template
 
 all: goUtil doc
 
-doc: docMain docMan
+doc: docMan
 
 clean: cleanGoUtil cleanCheck
 
