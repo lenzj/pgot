@@ -15,4 +15,5 @@ this repository root.  I.E. ../repo-template
 Once this is in place you can regenerate the documents from templates using the
 following command from the main repository folder:
 
+    $ make regenMakefile
     $ make regenDocMain

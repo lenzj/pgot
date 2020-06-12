@@ -4,13 +4,9 @@ PNAME = pgot
 
 RTEMPLATE ?= ../repo-template
 
-all: goUtil doc
-
-doc: docMan
+all: goUtil docMan
 
 clean: cleanGoUtil cleanCheck
-
-cleanDoc: cleanDocMain cleanDocMan
 
 install: installGoUtil installMan
 
@@ -18,7 +14,7 @@ uninstall: uninstallGoUtil uninstallMan
 
 .DEFAULT_GOAL := all
 
-.PHONY: all doc clean cleanDoc install uninstall
+.PHONY: all clean install uninstall
 
 #---Helper Macros to Remove Files---
 
