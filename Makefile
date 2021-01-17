@@ -33,7 +33,7 @@ BINDIR ?= $(_INSTDIR)/bin
 GO ?= go
 GOFLAGS ?=
 
-VERSION != git describe --first-parent 2> /dev/null
+VERSION != git describe --tags 2> /dev/null
 
 GOSRC != find . -name '*.go'
 
